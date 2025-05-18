@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Project Path="Rekindle.UserGroups.Api\Rekindle.UserGroups.Api.csproj" Type="Classic C#" />
+  <Project Path="Rekindle.UserGroups.Application\Rekindle.UserGroups.Application.csproj" Type="Classic C#" />
+  <Project Path="Rekindle.UserGroups.DataAccess\Rekindle.UserGroups.DataAccess.csproj" Type="Classic C#" />
+  <Project Path="Rekindle.UserGroups.Domain\Rekindle.UserGroups.Domain.csproj" Type="Classic C#" />
+  <Project Path="Rekindle.UserGroups.Infrastructure\Rekindle.UserGroups.Infrastructure.csproj" Type="Classic C#" />
+</Solution>

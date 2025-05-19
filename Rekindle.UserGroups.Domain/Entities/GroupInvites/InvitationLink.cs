@@ -1,9 +1,11 @@
+using Rekindle.UserGroups.Domain.Common;
+using Rekindle.UserGroups.Domain.Entities.GroupInvites.Events;
 using Rekindle.UserGroups.Domain.Entities.Groups;
 using Rekindle.UserGroups.Domain.Entities.Users;
 
 namespace Rekindle.UserGroups.Domain.Entities.GroupInvites;
 
-public class InvitationLink
+public class InvitationLink : Entity
 {
     public Guid Id { get; private set; }
     public Guid GroupId { get; private set; }
@@ -27,8 +29,7 @@ public class InvitationLink
         Guid createdByUserId,
         int maxUses = 10,
         int expirationDays = 30)
-    {
-        return new InvitationLink
+    {        var invitationLink = new InvitationLink
         {
             Id = Guid.NewGuid(),
             GroupId = groupId,
@@ -39,6 +40,18 @@ public class InvitationLink
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(expirationDays)
         };
+        
+        // Add domain event for invitation link created
+        invitationLink.AddDomainEvent(new GroupInvitationLinkCreatedDomainEvent(
+            invitationLink.Id,
+            invitationLink.GroupId,
+            invitationLink.CreatedByUserId,
+            invitationLink.Token,
+            invitationLink.MaxUses,
+            invitationLink.ExpiresAt
+        ));
+        
+        return invitationLink;
     }
 
     public bool IsValid()

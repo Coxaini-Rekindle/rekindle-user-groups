@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Rekindle.UserGroups.Application\Rekindle.UserGroups.Application.csproj"/>
+        <ProjectReference Include="..\Rekindle.UserGroups.Contracts\Rekindle.UserGroups.Contracts.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -18,6 +19,9 @@
         <PackageReference Include="Quartz" Version="3.8.1"/>
         <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.8.1"/>
         <PackageReference Include="Quartz.Extensions.Hosting" Version="3.8.1"/>
+        <PackageReference Include="Rebus" Version="8.8.0"/>
+        <PackageReference Include="Rebus.RabbitMQ" Version="10.0.1"/>
+        <PackageReference Include="Rebus.ServiceProvider" Version="10.3.0"/>
     </ItemGroup>
 
 </Project>

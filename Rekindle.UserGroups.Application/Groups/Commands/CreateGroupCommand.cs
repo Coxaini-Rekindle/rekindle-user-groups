@@ -1,9 +1,8 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Rekindle.UserGroups.Application.Groups.DTOs;
+using Rekindle.UserGroups.DataAccess;
 using Rekindle.UserGroups.Domain.Entities.Groups;
 using Rekindle.UserGroups.Domain.Entities.GroupUsers.Enumerations;
-using Rekindle.UserGroups.DataAccess;
 
 namespace Rekindle.UserGroups.Application.Groups.Commands;
 
@@ -15,15 +14,16 @@ public record CreateGroupCommand(
 public class CreateGroupCommandHandler : IRequestHandler<CreateGroupCommand, GroupDto>
 {
     private readonly UserGroupsDbContext _dbContext;
-    
-    public CreateGroupCommandHandler(UserGroupsDbContext dbContext)
+
+    public CreateGroupCommandHandler(
+        UserGroupsDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
     public async Task<GroupDto> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.FindAsync(new object[] { request.CreatedByUserId }, cancellationToken);
+        var user = await _dbContext.Users.FindAsync([request.CreatedByUserId], cancellationToken);
         
         if (user == null)
         {
@@ -33,11 +33,9 @@ public class CreateGroupCommandHandler : IRequestHandler<CreateGroupCommand, Gro
         var group = Group.Create(
             request.Name,
             request.Description,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            user
         );
-        
-        // Add creator as owner
-        group.AddMember(user, GroupUserRole.Owner);
         
         _dbContext.Groups.Add(group);
         await _dbContext.SaveChangesAsync(cancellationToken);

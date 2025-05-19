@@ -8,6 +8,7 @@ using Rekindle.UserGroups.DataAccess;
 using Rekindle.UserGroups.Infrastructure;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Rekindle.UserGroups.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,9 @@ builder.Services
     .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// Start the Rebus message bus
+app.Services.StartRebus();
 
 app.UseSwaggerUI(c =>
 {

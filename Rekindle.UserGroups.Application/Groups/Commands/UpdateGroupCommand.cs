@@ -43,9 +43,8 @@ public class UpdateGroupCommandHandler : IRequestHandler<UpdateGroupCommand, Gro
         if (currentUserMember.Role != GroupUserRole.Owner)
         {
             throw new NotGroupOwnerException();
-        }
-        
-        group.Update(request.Name, request.Description);
+        }        
+        group.Update(request.Name, request.Description, request.CurrentUserId);
         await _dbContext.SaveChangesAsync(cancellationToken);
         
         return GroupDto.FromGroup(group, request.CurrentUserId);

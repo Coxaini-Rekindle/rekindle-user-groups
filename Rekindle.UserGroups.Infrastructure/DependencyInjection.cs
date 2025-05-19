@@ -4,9 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Rekindle.UserGroups.Infrastructure.Messaging;
 using Quartz;
 using Rekindle.UserGroups.Application.Authentication.Interfaces;
 using Rekindle.UserGroups.Application.Common.Interfaces;
+using Rekindle.UserGroups.Infrastructure.DomainEvents;
 using Rekindle.UserGroups.Infrastructure.Email;
 using Rekindle.UserGroups.Infrastructure.Email.Extensions;
 using Rekindle.UserGroups.Infrastructure.Email.Jobs;
@@ -22,7 +24,8 @@ public static class DependencyInjection
     {
         services.AddJwtAuth(configuration);
         services.AddEmailServices(configuration);
-        
+        services.AddRebusMessageBus(configuration);
+
         return services;
     }
 

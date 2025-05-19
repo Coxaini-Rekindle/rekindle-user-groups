@@ -12,12 +12,14 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         Guard.Against.NullOrEmpty(connectionString);
 
-        services.AddDbContext<UserGroupsDbContext>(options => options.UseNpgsql(connectionString,
-            sqlOptions =>
+        services.AddDbContext<UserGroupsDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString, sqlOptions =>
             {
                 sqlOptions.MigrationsHistoryTable($"__{nameof(UserGroupsDbContext)}MigrationsHistory");
                 sqlOptions.MigrationsAssembly(typeof(DependencyInjection).Assembly.GetName().Name);
-            }));
+            });
+        });
 
         using var scope = services.BuildServiceProvider().CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<UserGroupsDbContext>();

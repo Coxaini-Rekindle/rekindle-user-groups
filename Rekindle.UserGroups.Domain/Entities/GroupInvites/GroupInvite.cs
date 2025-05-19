@@ -1,10 +1,12 @@
+using Rekindle.UserGroups.Domain.Common;
 using Rekindle.UserGroups.Domain.Entities.GroupInvites.Enumerations;
+using Rekindle.UserGroups.Domain.Entities.GroupInvites.Events;
 using Rekindle.UserGroups.Domain.Entities.Groups;
 using Rekindle.UserGroups.Domain.Entities.Users;
 
 namespace Rekindle.UserGroups.Domain.Entities.GroupInvites;
 
-public class GroupInvite
+public class GroupInvite : Entity
 {
     public Guid Id { get; private set; }
     public Guid GroupId { get; private set; }
@@ -30,11 +32,10 @@ public class GroupInvite
         Guid? invitedUserId = null,
         string? email = null,
         int expirationDays = 7)
-    {
-        if (invitedUserId == null && string.IsNullOrEmpty(email))
+    {        if (invitedUserId == null && string.IsNullOrEmpty(email))
             throw new ArgumentException("Either invitedUserId or email must be provided");
 
-        return new GroupInvite
+        var groupInvite = new GroupInvite
         {
             Id = Guid.NewGuid(),
             GroupId = groupId,
@@ -45,13 +46,34 @@ public class GroupInvite
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(expirationDays)
         };
-    }
-
-    public bool Accept()
+        
+        // Add domain event for group invitation created
+        groupInvite.AddDomainEvent(new GroupInvitationCreatedDomainEvent(
+            groupInvite.Id,
+            groupInvite.GroupId,
+            groupInvite.InvitedByUserId,
+            groupInvite.InvitedUserId,
+            groupInvite.Email,
+            groupInvite.ExpiresAt
+        ));
+        
+        return groupInvite;
+    }    public bool Accept()
     {
         if (Status != InvitationStatus.Pending || IsExpired()) return false;
 
         Status = InvitationStatus.Accepted;
+        
+        // Add domain event for group invitation accepted
+        if (InvitedUserId.HasValue)
+        {
+            AddDomainEvent(new GroupInvitationAcceptedDomainEvent(
+                Id,
+                GroupId,
+                InvitedUserId.Value
+            ));
+        }
+        
         return true;
     }
 

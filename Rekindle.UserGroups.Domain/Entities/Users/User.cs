@@ -1,6 +1,9 @@
-﻿namespace Rekindle.UserGroups.Domain.Entities.Users;
+﻿using Rekindle.UserGroups.Domain.Common;
+using Rekindle.UserGroups.Domain.Entities.Users.Events;
 
-public class User
+namespace Rekindle.UserGroups.Domain.Entities.Users;
+
+public class User : Entity
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; } = null!;
@@ -12,7 +15,7 @@ public class User
 
     public static User Create(string name, string username, string email, string passwordHash)
     {
-        return new User
+        var user = new User
         {
             Id = Guid.NewGuid(),
             Name = name,
@@ -20,6 +23,10 @@ public class User
             Email = email,
             PasswordHash = passwordHash
         };
+
+        user.AddDomainEvent(new UserCreatedDomainEvent(user.Id, user.Email, user.Username, user.Name));
+
+        return user;
     }
 
     public void SetRefreshToken(string token, DateTime expiryTime)

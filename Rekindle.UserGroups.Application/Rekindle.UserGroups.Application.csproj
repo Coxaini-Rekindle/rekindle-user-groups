@@ -17,4 +17,8 @@
       <ProjectReference Include="..\Rekindle.UserGroups.DataAccess\Rekindle.UserGroups.DataAccess.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Common\"/>
+    </ItemGroup>
+
 </Project>

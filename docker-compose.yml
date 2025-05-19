@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  rekindle.user-groups.postgres:
+    image: postgres:latest
+    container_name: rekindle.user-groups.postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_groups
+    ports:
+      - "5432:5432"
+    volumes:
+      - ~/.rekindle/user-groups/postgresql/data:/var/lib/postgresql/data
+    networks:
+        - rekindle-network
+        
+        
+networks:
+  rekindle-network:
+    driver: bridge

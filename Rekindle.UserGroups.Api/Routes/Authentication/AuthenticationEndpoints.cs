@@ -29,7 +29,7 @@ public static class AuthenticationEndpoints
                     request.Password);
 
                 var result = await mediator.Send(command);
-                return Results.Ok(result);
+                return TypedResults.Ok(result);
             })
             .AllowAnonymous();
 
@@ -37,7 +37,7 @@ public static class AuthenticationEndpoints
         {
             var command = new RefreshTokenCommand(request.AccessToken, request.RefreshToken);
             var result = await mediator.Send(command);
-            return Results.Ok(result);
+            return TypedResults.Ok(result);
         }).AllowAnonymous();
 
         return app;

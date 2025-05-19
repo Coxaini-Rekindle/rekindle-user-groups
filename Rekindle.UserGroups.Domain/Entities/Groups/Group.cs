@@ -1,4 +1,6 @@
 ﻿using Rekindle.UserGroups.Domain.Entities.GroupUsers;
+using Rekindle.UserGroups.Domain.Entities.GroupUsers.Enumerations;
+using Rekindle.UserGroups.Domain.Entities.Users;
 
 namespace Rekindle.UserGroups.Domain.Entities.Groups;
 
@@ -20,4 +22,35 @@ public class Group
             CreatedAt = createdAt
         };
     }
+
+    public GroupUser AddMember(User user, GroupUserRole role = GroupUserRole.Member)
+    {
+        var groupUser = GroupUser.Create(user.Id, Id, role);
+        Members.Add(groupUser);
+        return groupUser;
+    }
+
+    public GroupUser? GetMember(Guid userId)
+    {
+        return Members.FirstOrDefault(m => m.UserId == userId);
+    }
+
+    public bool RemoveMember(Guid userId)
+    {
+        var member = GetMember(userId);
+        if (member == null) return false;
+
+        return Members.Remove(member);
+    }
+
+    public void Update(string name, string description)
+    {
+        Name = name;
+        Description = description;
+    }
+
+    private Group()
+    {
+    }
 }
+

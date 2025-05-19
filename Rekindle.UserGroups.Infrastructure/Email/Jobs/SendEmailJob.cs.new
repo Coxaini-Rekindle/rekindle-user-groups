@@ -1,0 +1,134 @@
+using Microsoft.Extensions.Logging;
+using Quartz;
+using Rekindle.UserGroups.Application.Common.Interfaces;
+using Rekindle.UserGroups.Infrastructure.Email.Extensions;
+
+namespace Rekindle.UserGroups.Infrastructure.Email.Jobs;
+
+[DisallowConcurrentExecution]
+public class SendEmailJob : IJob
+{
+    public static class JobKeys
+    {
+        public static readonly string RecipientEmail = "RecipientEmail";
+        public static readonly string Subject = "Subject";
+        public static readonly string HtmlContent = "HtmlContent";
+        public static readonly string GroupName = "GroupName";
+        public static readonly string InviterName = "InviterName";
+        public static readonly string InvitationLink = "InvitationLink";
+        public static readonly string IsGroupInvitation = "IsGroupInvitation";
+    }
+
+    private readonly IEmailService _emailService;
+    private readonly ILogger<SendEmailJob> _logger;
+
+    public SendEmailJob(IEmailService emailService, ILogger<SendEmailJob> logger)
+    {
+        _emailService = emailService;
+        _logger = logger;
+    }
+
+    public async Task Execute(IJobExecutionContext context)
+    {
+        var dataMap = context.MergedJobDataMap;
+        
+        // Check if this is a default trigger execution with no data
+        if (dataMap.Count == 0)
+        {
+            _logger.LogInformation("Default trigger execution with no job data - nothing to send");
+            return;
+        }
+        
+        // Safely attempt to get the recipient email
+        if (!dataMap.TryGetString(JobKeys.RecipientEmail, out var recipientEmail) || string.IsNullOrEmpty(recipientEmail))
+        {
+            _logger.LogError("Recipient email is missing in job data");
+            return;
+        }
+
+        // Safely get the invitation flag with default value of false
+        var isGroupInvitation = dataMap.GetBoolean(JobKeys.IsGroupInvitation);
+        
+        try
+        {
+            if (isGroupInvitation)
+            {
+                string inviterName;
+                if (!dataMap.TryGetString(JobKeys.InviterName, out var name) || string.IsNullOrEmpty(name))
+                {
+                    inviterName = "Someone";
+                }
+                else
+                {
+                    inviterName = name;
+                }
+                
+                string groupName;
+                if (!dataMap.TryGetString(JobKeys.GroupName, out var gName) || string.IsNullOrEmpty(gName))
+                {
+                    groupName = "a group";
+                }
+                else
+                {
+                    groupName = gName;
+                }
+                
+                string invitationLink;
+                if (!dataMap.TryGetString(JobKeys.InvitationLink, out var link) || string.IsNullOrEmpty(link))
+                {
+                    invitationLink = "#";
+                }
+                else
+                {
+                    invitationLink = link;
+                }
+                
+                await _emailService.SendGroupInvitationEmailAsync(
+                    recipientEmail,
+                    inviterName,
+                    groupName,
+                    invitationLink,
+                    context.CancellationToken);
+                
+                _logger.LogInformation("Group invitation email to {RecipientEmail} for group {GroupName} has been sent", 
+                    recipientEmail, groupName);
+            }
+            else
+            {
+                string subject;
+                if (!dataMap.TryGetString(JobKeys.Subject, out var subj) || string.IsNullOrEmpty(subj))
+                {
+                    subject = "No Subject";
+                }
+                else
+                {
+                    subject = subj;
+                }
+                
+                string htmlContent;
+                if (!dataMap.TryGetString(JobKeys.HtmlContent, out var html) || string.IsNullOrEmpty(html))
+                {
+                    htmlContent = "No Content";
+                }
+                else
+                {
+                    htmlContent = html;
+                }
+                
+                await _emailService.SendEmailAsync(
+                    recipientEmail,
+                    subject,
+                    htmlContent,
+                    context.CancellationToken);
+                
+                _logger.LogInformation("Email to {RecipientEmail} with subject {Subject} has been sent", 
+                    recipientEmail, subject);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email to {RecipientEmail}", recipientEmail);
+            throw;
+        }
+    }
+}

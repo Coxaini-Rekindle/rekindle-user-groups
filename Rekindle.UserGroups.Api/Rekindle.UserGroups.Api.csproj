@@ -1,15 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk.Web">    <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>2444ecc4-dba9-4e5f-a01f-c47b858e0080</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="rekindle.exceptions.api" Version="1.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1"/>
     </ItemGroup>
@@ -23,6 +28,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Rekindle.UserGroups.Application\Rekindle.UserGroups.Application.csproj"/>
         <ProjectReference Include="..\Rekindle.UserGroups.DataAccess\Rekindle.UserGroups.DataAccess.csproj"/>
+        <ProjectReference Include="..\Rekindle.UserGroups.Infrastructure\Rekindle.UserGroups.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -20,11 +20,11 @@ jobs:
         with:
           dotnet-version: '9.x'
 
-      - name: Restore dependencies
-        run: dotnet restore Rekindle.UserGroups.slnx
+      - name: Restore Contracts project dependencies
+        run: dotnet restore Rekindle.UserGroups.Contracts/Rekindle.UserGroups.Contracts.csproj
 
-      - name: Build projects
-        run: dotnet build Rekindle.UserGroups.slnx --configuration Release --no-restore
+      - name: Build Contracts project
+        run: dotnet build Rekindle.UserGroups.Contracts/Rekindle.UserGroups.Contracts.csproj --configuration Release --no-restore
 
       - name: Pack Rekindle.UserGroups.Contracts
         run: dotnet pack Rekindle.UserGroups.Contracts/Rekindle.UserGroups.Contracts.csproj --configuration Release --no-build -o ./packages
@@ -34,4 +34,4 @@ jobs:
           dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Coxaini-Rekindle/index.json"
           dotnet nuget push "./packages/*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
         env:
-          USERNAME: ${{ github.actor }} 
+          USERNAME: ${{ github.actor }}

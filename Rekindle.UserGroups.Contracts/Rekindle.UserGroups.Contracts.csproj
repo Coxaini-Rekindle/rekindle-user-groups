@@ -12,8 +12,4 @@
     <PackageTags>rekindle;microservices;events;contracts</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Rebus" Version="8.0.2" />
-  </ItemGroup>
-
 </Project>

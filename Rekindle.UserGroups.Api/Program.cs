@@ -22,8 +22,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 
-var allowedHost = builder.Configuration.GetValue<string>("AllowedHosts");
-Guard.Against.NullOrWhiteSpace(allowedHost, nameof(allowedHost));
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+
+if (allowedOrigins == null || allowedOrigins.Length == 0)
+    throw new ArgumentNullException(nameof(allowedOrigins), "Allowed origins must be configured.");
 
 builder.Services.AddCors(options =>
 {
@@ -31,7 +33,7 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder =>
         {
             corsPolicyBuilder
-                .WithOrigins(allowedHost)
+                .WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
@@ -59,7 +61,7 @@ app.UseSwaggerUI(c =>
 app.UseCors("Default");
 
 app.UseExceptionHandlingMiddleware();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

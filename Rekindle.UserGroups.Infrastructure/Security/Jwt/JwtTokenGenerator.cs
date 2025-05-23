@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Rekindle.UserGroups.Application.Authentication.Interfaces;
 using Rekindle.UserGroups.Application.Authentication.Models;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Rekindle.UserGroups.Infrastructure.Security.Jwt;
 
@@ -23,7 +24,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
                 SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
             SecurityAlgorithms.HmacSha256);        var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userClaims.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.NameId, userClaims.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, userClaims.Email)
         };
 

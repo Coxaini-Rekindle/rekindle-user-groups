@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Rekindle.UserGroups.Application.Authentication.Exceptions;
@@ -32,7 +32,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         if (principal == null)
             throw new InvalidTokenException();
 
-        var userId = principal.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
+        var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
             throw new InvalidTokenException();
 

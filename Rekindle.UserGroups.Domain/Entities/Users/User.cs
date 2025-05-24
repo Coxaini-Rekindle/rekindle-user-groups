@@ -12,6 +12,7 @@ public class User : Entity
     public string PasswordHash { get; private set; } = null!;
     public string? RefreshToken { get; private set; }
     public DateTime? RefreshTokenExpiryTime { get; private set; }
+    public Guid? AvatarFileId { get; private set; }
 
     public static User Create(string name, string username, string email, string passwordHash)
     {
@@ -38,6 +39,16 @@ public class User : Entity
     public bool IsRefreshTokenValid(string token)
     {
         return RefreshToken == token && RefreshTokenExpiryTime > DateTime.UtcNow;
+    }
+
+    public void UpdateName(string name)
+    {
+        Name = name;
+    }
+
+    public void SetAvatar(Guid? avatarFileId)
+    {
+        AvatarFileId = avatarFileId;
     }
 
     private User()

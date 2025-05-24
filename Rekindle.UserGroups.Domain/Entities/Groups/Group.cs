@@ -56,7 +56,9 @@ public class Group : Entity
     public GroupUser? GetMember(Guid userId)
     {
         return Members.FirstOrDefault(m => m.UserId == userId);
-    }    public bool RemoveMember(Guid userId, bool wasRemoved = false, Guid? removedByUserId = null)
+    }
+
+    public bool RemoveMember(Guid userId, bool wasRemoved = false, Guid? removedByUserId = null)
     {
         var member = GetMember(userId);
         if (member == null) return false;
@@ -88,6 +90,18 @@ public class Group : Entity
             Name,
             Description,
             updatedByUserId
+        ));
+    }
+
+    public void Delete(Guid deletedByUserId)
+    {
+        // Add domain event for group deleted
+        AddDomainEvent(new GroupDeletedDomainEvent(
+            Id,
+            Name,
+            Description,
+            deletedByUserId,
+            DateTime.UtcNow
         ));
     }
 

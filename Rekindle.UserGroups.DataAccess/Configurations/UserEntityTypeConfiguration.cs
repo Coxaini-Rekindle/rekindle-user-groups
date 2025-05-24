@@ -31,5 +31,7 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.RefreshToken);
         
         builder.Property(u => u.RefreshTokenExpiryTime);
+
+        builder.Property(u => u.AvatarFileId);
     }
 }

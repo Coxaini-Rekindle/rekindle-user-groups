@@ -46,7 +46,8 @@ public static class GroupEndpoints
                     var command = new CreateGroupCommand(
                         request.Name,
                         request.Description,
-                        userId.Value
+                        userId.Value,
+                        request.InvitationEmails
                     );
 
                     var result = await mediator.Send(command);
@@ -110,9 +111,24 @@ public static class GroupEndpoints
             .WithDescription("Get details for a specific group")
             .Produces<GroupDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
-    }
+        
+        group.MapDelete("/{groupId:guid}",
+                async (Guid groupId, ClaimsPrincipal user, IMediator mediator) =>
+                {
+                    var userId = UserContextHelper.GetCurrentUserId(user);
+                    if (userId == null) return Results.Unauthorized();
 
-    /// <summary>
+                    var command = new DeleteGroupCommand(groupId, userId.Value);
+                    var result = await mediator.Send(command);
+                    return result ? Results.NoContent() : Results.NotFound();
+                })
+            .WithName("DeleteGroup")
+            .WithDescription("Delete a group (only group owners can delete)")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+    }    /// <summary>
     /// Maps endpoints related to group membership
     /// </summary>
     private static void MapGroupMembershipEndpoints(IEndpointRouteBuilder group)
@@ -130,6 +146,29 @@ public static class GroupEndpoints
             .WithName("GetGroupMembers")
             .WithDescription("Get members of a group")
             .Produces<List<GroupMemberDto>>()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapDelete("/{groupId:guid}/members/{userIdToRemove:guid}",
+                async (Guid groupId, Guid userIdToRemove, ClaimsPrincipal user, IMediator mediator) =>
+                {
+                    var userId = UserContextHelper.GetCurrentUserId(user);
+                    if (userId == null) return Results.Unauthorized();
+
+                    var command = new RemoveUserFromGroupCommand(
+                        groupId,
+                        userIdToRemove,
+                        userId.Value
+                    );
+
+                    var result = await mediator.Send(command);
+                    return result ? Results.NoContent() : Results.NotFound();
+                })
+            .WithName("RemoveUserFromGroup")
+            .WithDescription("Remove a user from a group")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -253,7 +292,7 @@ public static class GroupEndpoints
     }
 
     // Request and response models
-    public record CreateGroupRequest(string Name, string Description);
+    public record CreateGroupRequest(string Name, string Description, IEnumerable<string> InvitationEmails);
 
     public record UpdateGroupRequest(string Name, string Description);
 

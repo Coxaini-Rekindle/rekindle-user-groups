@@ -21,7 +21,9 @@ public class UserGroupsDbContext : DbContext
     public DbSet<Group> Groups { get; set; } = null!;
     public DbSet<GroupUser> GroupUsers { get; set; } = null!;
     public DbSet<GroupInvite> GroupInvites { get; set; } = null!;
-    public DbSet<InvitationLink> InvitationLinks { get; set; } = null!;    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public DbSet<InvitationLink> InvitationLinks { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserGroupsDbContext).Assembly);
         

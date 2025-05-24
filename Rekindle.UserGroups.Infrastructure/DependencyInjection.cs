@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using Rekindle.UserGroups.Infrastructure.Messaging;
 using Quartz;
 using Rekindle.UserGroups.Application.Authentication.Interfaces;
 using Rekindle.UserGroups.Application.Common.Interfaces;
+using Rekindle.UserGroups.Application.Storage.Interfaces;
 using Rekindle.UserGroups.Infrastructure.DomainEvents;
 using Rekindle.UserGroups.Infrastructure.Email;
 using Rekindle.UserGroups.Infrastructure.Email.Extensions;
@@ -15,6 +17,7 @@ using Rekindle.UserGroups.Infrastructure.Email.Jobs;
 using Rekindle.UserGroups.Infrastructure.Email.Settings;
 using Rekindle.UserGroups.Infrastructure.Security;
 using Rekindle.UserGroups.Infrastructure.Security.Jwt;
+using Rekindle.UserGroups.Infrastructure.Storage;
 
 namespace Rekindle.UserGroups.Infrastructure;
 
@@ -25,11 +28,24 @@ public static class DependencyInjection
         services.AddJwtAuth(configuration);
         services.AddEmailServices(configuration);
         services.AddRebusMessageBus(configuration);
+        services.AddFileStorage(configuration);
+        
+        // Add HTTP context accessor and current user service
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }
 
-    public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddFileStorage(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IFileStorage, FileStorage>();
+        services.AddSingleton(_ => new BlobServiceClient(configuration.GetConnectionString("BlobStorage")));
+
+        return services;
+    }
+
+    private static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtSettings = new JwtSettings();
         configuration.Bind("JwtSettings", jwtSettings);
@@ -63,8 +79,8 @@ public static class DependencyInjection
 
         return services;
     }
-    
-    public static IServiceCollection AddEmailServices(this IServiceCollection services, IConfiguration configuration)
+
+    private static IServiceCollection AddEmailServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Register email settings
         var emailSettings = new EmailSettings();

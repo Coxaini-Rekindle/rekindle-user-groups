@@ -3,6 +3,7 @@ using Rekindle.Exceptions.Api;
 using Rekindle.UserGroups.Api.Extensions;
 using Rekindle.UserGroups.Api.Routes.Authentication;
 using Rekindle.UserGroups.Api.Routes.Groups;
+using Rekindle.UserGroups.Api.Routes.Users;
 using Rekindle.UserGroups.Application;
 using Rekindle.UserGroups.DataAccess;
 using Rekindle.UserGroups.Infrastructure;
@@ -68,5 +69,6 @@ app.UseAuthorization();
 
 app.MapAuthEndpoints();
 app.MapGroupEndpoints();
+app.MapUserEndpoints();
 
 app.Run();

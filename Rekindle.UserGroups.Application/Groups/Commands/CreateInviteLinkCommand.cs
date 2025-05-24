@@ -1,5 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Rekindle.UserGroups.Application.Common.Configs;
 using Rekindle.UserGroups.Application.Groups.Exceptions;
 using Rekindle.UserGroups.DataAccess;
 using Rekindle.UserGroups.Domain.Entities.GroupInvites;
@@ -16,9 +18,11 @@ public record CreateInviteLinkCommand(
 public class CreateInviteLinkCommandHandler : IRequestHandler<CreateInviteLinkCommand, string>
 {
     private readonly UserGroupsDbContext _dbContext;
-    
-    public CreateInviteLinkCommandHandler(UserGroupsDbContext dbContext)
+    private readonly FrontendConfig _frontendConfig;
+
+    public CreateInviteLinkCommandHandler(UserGroupsDbContext dbContext, IOptions<FrontendConfig> frontendConfig)
     {
+        _frontendConfig = frontendConfig.Value;
         _dbContext = dbContext;
     }
 
@@ -57,6 +61,6 @@ public class CreateInviteLinkCommandHandler : IRequestHandler<CreateInviteLinkCo
         await _dbContext.SaveChangesAsync(cancellationToken);
         
         // Return the invitation link URL
-        return $"https://rekindle.com/groups/join/{invitationLink.Token}";
+        return $"{_frontendConfig.TokenInvitationUrl}{invitationLink.Token}";
     }
 }

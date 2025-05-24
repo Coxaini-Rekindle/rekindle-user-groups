@@ -250,7 +250,21 @@ public static class GroupEndpoints
             .WithName("GetUserInvitations")
             .WithDescription("Get all pending invitations for the current user")
             .Produces<List<GroupInviteDto>>()
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .ProducesProblem(StatusCodes.Status401Unauthorized);        // Get group info by invitation ID endpoint
+        app.MapGet("invitations/{inviteId:guid}/group",
+                async (Guid inviteId, ClaimsPrincipal user, IMediator mediator) =>
+                {
+                    var userId = UserContextHelper.GetCurrentUserId(user);
+
+                    var query = new GetGroupInfoByInviteIdQuery(inviteId, userId);
+                    var result = await mediator.Send(query);
+                    return TypedResults.Ok(result);
+                })
+            .WithTags("Group Invitations")
+            .WithName("GetGroupInfoByInviteId")
+            .WithDescription("Get group information by personal invitation ID")
+            .Produces<GroupDto>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         // Accept invitation endpoint
         app.MapPost("invitations/{inviteId:guid}/accept",
@@ -269,8 +283,23 @@ public static class GroupEndpoints
             .WithDescription("Accept a group invitation")
             .Produces<GroupDto>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status404NotFound);            
+        // Get group info by token endpoint
+        app.MapGet("groups/join/{token}/info",
+                async (string token, ClaimsPrincipal user, IMediator mediator) =>
+                {
+                    var userId = UserContextHelper.GetCurrentUserId(user);
+
+                    var query = new GetGroupInfoByTokenQuery(token, userId);
+                    var result = await mediator.Send(query);
+                    return TypedResults.Ok(result);
+                })
+            .WithTags("Group Invitations")
+            .WithName("GetGroupInfoByToken")
+            .WithDescription("Get group information by public invitation token")
+            .Produces<GroupDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
-            
+
         // Join with link endpoint
         app.MapPost("groups/join/{token}",
                 async (string token, ClaimsPrincipal user, IMediator mediator) =>

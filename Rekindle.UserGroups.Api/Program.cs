@@ -44,7 +44,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddAuthorization();
 builder.Services
-    .AddApplication()
+    .AddApplication(builder.Configuration)
     .AddDataAccess(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
 

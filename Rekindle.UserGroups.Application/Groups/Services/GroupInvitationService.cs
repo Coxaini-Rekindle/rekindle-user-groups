@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Rekindle.UserGroups.Application.Common.Configs;
 using Rekindle.UserGroups.Application.Common.Interfaces;
 using Rekindle.UserGroups.Application.Groups.DTOs;
 using Rekindle.UserGroups.Application.Groups.Exceptions;
@@ -12,11 +14,14 @@ public class GroupInvitationService : IGroupInvitationService
 {
     private readonly UserGroupsDbContext _dbContext;
     private readonly IEmailScheduler _emailScheduler;
+    private readonly FrontendConfig _frontendConfig;
 
-    public GroupInvitationService(UserGroupsDbContext dbContext, IEmailScheduler emailScheduler)
+    public GroupInvitationService(UserGroupsDbContext dbContext, IEmailScheduler emailScheduler,
+        IOptions<FrontendConfig> frontendConfig)
     {
         _dbContext = dbContext;
         _emailScheduler = emailScheduler;
+        _frontendConfig = frontendConfig.Value;
     }
 
     public async Task<GroupInviteDto> InviteToGroupAsync(
@@ -90,7 +95,7 @@ public class GroupInvitationService : IGroupInvitationService
             .LoadAsync(cancellationToken);
         
         // Generate invitation link and send email
-        var invitationLink = $"https://rekindle.com/groups/invites/{invite.Id}";
+        var invitationLink = $"{_frontendConfig.PersonalInvitationUrl}{invite.Id}";
         
         await _emailScheduler.ScheduleGroupInvitationEmailAsync(
             email,
@@ -210,7 +215,7 @@ public class GroupInvitationService : IGroupInvitationService
             return; // Cannot send email without email address
         }
 
-        var invitationLink = $"https://rekindle.com/groups/invites/{invitation.Id}";
+        var invitationLink = $"{_frontendConfig.PersonalInvitationUrl}{invitation.Id}";
         
         await _emailScheduler.ScheduleGroupInvitationEmailAsync(
             invitation.Email,

@@ -26,6 +26,7 @@ public class UpdateGroupCommandHandler : IRequestHandler<UpdateGroupCommand, Gro
     {
         var group = await _dbContext.Groups
             .Include(g => g.Members)
+            .ThenInclude(m => m.User)
             .FirstOrDefaultAsync(g => g.Id == request.GroupId, cancellationToken);
         
         if (group == null)

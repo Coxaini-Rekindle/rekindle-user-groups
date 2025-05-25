@@ -19,9 +19,11 @@ public class GetUserGroupsQueryHandler : IRequestHandler<GetUserGroupsQuery, Lis
     public async Task<List<GroupDto>> Handle(GetUserGroupsQuery request, CancellationToken cancellationToken)
     {
         var userGroups = await _dbContext.GroupUsers
+            .AsSplitQuery()
             .Where(gu => gu.UserId == request.UserId)
             .Include(gu => gu.Group)
                 .ThenInclude(g => g.Members)
+            .ThenInclude(m => m.User)
             .Select(gu => gu.Group)
             .ToListAsync(cancellationToken);
 

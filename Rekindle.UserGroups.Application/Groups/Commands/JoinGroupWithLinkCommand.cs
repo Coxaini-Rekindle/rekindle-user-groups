@@ -32,6 +32,7 @@ public class JoinGroupWithLinkCommandHandler : IRequestHandler<JoinGroupWithLink
         
         var group = await _dbContext.Groups
             .Include(g => g.Members)
+            .ThenInclude(m => m.User)
             .FirstOrDefaultAsync(g => g.Id == invitationLink.GroupId, cancellationToken);
         
         if (group == null)

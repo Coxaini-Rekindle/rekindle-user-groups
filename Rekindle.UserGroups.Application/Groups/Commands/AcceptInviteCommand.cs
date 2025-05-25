@@ -24,7 +24,10 @@ public class AcceptInviteCommandHandler : IRequestHandler<AcceptInviteCommand, G
     public async Task<GroupDto> Handle(AcceptInviteCommand request, CancellationToken cancellationToken)
     {
         var invite = await _dbContext.GroupInvites
+            .AsSplitQuery()
             .Include(i => i.Group)
+            .ThenInclude(g => g.Members)
+            .ThenInclude(m => m.User)
             .FirstOrDefaultAsync(i => i.Id == request.InviteId, cancellationToken);
         
         if (invite == null || invite.IsExpired())

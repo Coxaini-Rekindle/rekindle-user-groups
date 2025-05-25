@@ -11,6 +11,7 @@ public class GroupDto
     public int MemberCount { get; set; }
     public bool IsCurrentUserMember { get; set; }
     public bool IsCurrentUserOwner { get; set; }
+    public IEnumerable<GroupMemberShortDto> Members { get; set; } = new List<GroupMemberShortDto>();
     
     public static GroupDto FromGroup(Group group, Guid? currentUserId = null)
     {
@@ -32,7 +33,25 @@ public class GroupDto
             CreatedAt = group.CreatedAt,
             MemberCount = group.Members.Count,
             IsCurrentUserMember = isCurrentUserMember,
-            IsCurrentUserOwner = isCurrentUserOwner
+            IsCurrentUserOwner = isCurrentUserOwner,
+            Members = group.Members.OrderByDescending(x => x.JoinedAt).Select(GroupMemberShortDto.FromGroupUser)
+        };
+    }
+}
+
+public class GroupMemberShortDto
+{
+    public Guid UserId { get; set; }
+    public string Name { get; set; } = null!;
+    public Guid? AvatarFileId { get; set; }
+
+    public static GroupMemberShortDto FromGroupUser(Domain.Entities.GroupUsers.GroupUser groupUser)
+    {
+        return new GroupMemberShortDto
+        {
+            UserId = groupUser.UserId,
+            Name = groupUser.User.Name,
+            AvatarFileId = groupUser.User.AvatarFileId
         };
     }
 }

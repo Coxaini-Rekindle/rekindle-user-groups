@@ -27,6 +27,7 @@ public class GetGroupInfoByInviteIdQueryHandler : IRequestHandler<GetGroupInfoBy
         var invitation = await _dbContext.GroupInvites
             .Include(gi => gi.Group)
             .ThenInclude(g => g.Members)
+            .ThenInclude(m => m.User)
             .FirstOrDefaultAsync(gi => gi.Id == request.InviteId, cancellationToken);
 
         if (invitation == null) throw new InviteNotFoundException();

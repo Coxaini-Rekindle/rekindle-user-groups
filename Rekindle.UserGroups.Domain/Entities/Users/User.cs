@@ -43,11 +43,13 @@ public class User : Entity
 
     public void UpdateName(string name)
     {
+        AddDomainEvent(new UserNameChangedDomainEvent(Id, Name, name));
         Name = name;
     }
 
     public void SetAvatar(Guid? avatarFileId)
     {
+        AddDomainEvent(new UserAvatarChangedDomainEvent(Id, AvatarFileId, avatarFileId));
         AvatarFileId = avatarFileId;
     }
 

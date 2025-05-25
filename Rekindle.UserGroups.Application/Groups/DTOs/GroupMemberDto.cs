@@ -11,6 +11,7 @@ public class GroupMemberDto
     public string Email { get; set; } = null!;
     public GroupUserRole Role { get; set; }
     public DateTime JoinedAt { get; set; }
+    public Guid? AvatarFileId { get; set; }
     
     public static GroupMemberDto FromGroupUser(GroupUser groupUser)
     {
@@ -21,7 +22,8 @@ public class GroupMemberDto
             Username = groupUser.User.Username,
             Email = groupUser.User.Email,
             Role = groupUser.Role,
-            JoinedAt = groupUser.JoinedAt
+            JoinedAt = groupUser.JoinedAt,
+            AvatarFileId = groupUser.User.AvatarFileId
         };
     }
 }

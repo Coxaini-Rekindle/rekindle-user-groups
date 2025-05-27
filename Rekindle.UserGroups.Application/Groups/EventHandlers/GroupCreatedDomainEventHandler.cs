@@ -1,6 +1,7 @@
 using MediatR;
 using Rekindle.UserGroups.Application.Common.Interfaces;
 using Rekindle.UserGroups.Contracts.GroupEvents;
+using Rekindle.UserGroups.Contracts.Models;
 using Rekindle.UserGroups.Domain.Entities.Groups.Events;
 
 namespace Rekindle.UserGroups.Application.Groups.EventHandlers;
@@ -24,7 +25,8 @@ public class GroupCreatedDomainEventHandler : INotificationHandler<GroupCreatedD
             notification.GroupId,
             notification.Name,
             notification.Description,
-            notification.CreatedByUserId,
+            new UserContractDto(notification.Creator.Id, notification.Creator.Username, notification.Creator.Name,
+                notification.Creator.AvatarFileId),
             notification.CreatedAt);
             
         // Publish the integration event to the message bus

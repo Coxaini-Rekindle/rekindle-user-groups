@@ -28,7 +28,12 @@ public class Group : Entity
             group.Id,
             group.Name,
             group.Description,
-            creator.Id,
+            new CreatorUser(
+                creator.Id,
+                creator.Name,
+                creator.Username,
+                creator.AvatarFileId
+            ),
             group.CreatedAt
         ));
 
@@ -46,6 +51,9 @@ public class Group : Entity
         AddDomainEvent(new UserJoinedGroupDomainEvent(
             Id,
             user.Id,
+            user.Username,
+            user.Name,
+            user.AvatarFileId,
             role,
             groupUser.JoinedAt
         ));

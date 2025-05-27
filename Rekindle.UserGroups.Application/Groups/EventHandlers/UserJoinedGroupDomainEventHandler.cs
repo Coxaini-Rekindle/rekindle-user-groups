@@ -24,6 +24,9 @@ public class UserJoinedGroupDomainEventHandler : INotificationHandler<UserJoined
         var integrationEvent = new UserJoinedGroupEvent(
             notification.GroupId,
             notification.UserId,
+            notification.UserName,
+            notification.Name,
+            notification.AvatarFileId,
             notification.Role.ToString(),
             notification.JoinedAt);
             

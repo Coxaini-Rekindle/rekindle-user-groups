@@ -1,22 +1,15 @@
-﻿using System.Text;
-using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Rekindle.UserGroups.Infrastructure.Messaging;
 using Quartz;
-using Rekindle.UserGroups.Application.Authentication.Interfaces;
+using Rekindle.Authentication;
 using Rekindle.UserGroups.Application.Common.Interfaces;
 using Rekindle.UserGroups.Application.Storage.Interfaces;
-using Rekindle.UserGroups.Infrastructure.DomainEvents;
 using Rekindle.UserGroups.Infrastructure.Email;
 using Rekindle.UserGroups.Infrastructure.Email.Extensions;
 using Rekindle.UserGroups.Infrastructure.Email.Jobs;
 using Rekindle.UserGroups.Infrastructure.Email.Settings;
-using Rekindle.UserGroups.Infrastructure.Security;
-using Rekindle.UserGroups.Infrastructure.Security.Jwt;
 using Rekindle.UserGroups.Infrastructure.Storage;
 
 namespace Rekindle.UserGroups.Infrastructure;
@@ -30,10 +23,6 @@ public static class DependencyInjection
         services.AddRebusMessageBus(configuration);
         services.AddFileStorage(configuration);
         
-        // Add HTTP context accessor and current user service
-        services.AddHttpContextAccessor();
-        services.AddScoped<ICurrentUserService, CurrentUserService>();
-
         return services;
     }
 
@@ -41,41 +30,6 @@ public static class DependencyInjection
     {
         services.AddSingleton<IFileStorage, FileStorage>();
         services.AddSingleton(_ => new BlobServiceClient(configuration.GetConnectionString("BlobStorage")));
-
-        return services;
-    }
-
-    private static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
-    {
-        var jwtSettings = new JwtSettings();
-        configuration.Bind("JwtSettings", jwtSettings);
-
-        services.AddSingleton(Options.Create(jwtSettings));
-
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
-        services.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
-        services.AddSingleton<IPasswordHasher, PasswordHasher>();
-
-        services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings.Secret))
-                };
-            });
 
         return services;
     }

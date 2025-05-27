@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Rekindle.Authentication.Interfaces;
+using Rekindle.Authentication.Models;
 using Rekindle.UserGroups.Application.Authentication.Exceptions;
-using Rekindle.UserGroups.Application.Authentication.Interfaces;
-using Rekindle.UserGroups.Application.Authentication.Models;
 using Rekindle.UserGroups.DataAccess;
 
 namespace Rekindle.UserGroups.Application.Authentication.Commands;

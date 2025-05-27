@@ -10,17 +10,26 @@ public class UserJoinedGroupDomainEvent : DomainEvent
 {
     public Guid GroupId { get; }
     public Guid UserId { get; }
+    public string UserName { get; }
+    public string Name { get; }
+    public Guid? AvatarFileId { get; }
     public GroupUserRole Role { get; }
     public DateTime JoinedAt { get; }
 
     public UserJoinedGroupDomainEvent(
         Guid groupId,
         Guid userId,
+        string userName,
+        string name,
+        Guid? avatarFileId,
         GroupUserRole role,
         DateTime joinedAt)
     {
         GroupId = groupId;
         UserId = userId;
+        UserName = userName;
+        Name = name;
+        AvatarFileId = avatarFileId;
         Role = role;
         JoinedAt = joinedAt;
     }

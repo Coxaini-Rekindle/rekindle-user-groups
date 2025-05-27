@@ -1,6 +1,4 @@
-using Ardalis.GuardClauses;
 using Rekindle.Exceptions.Api;
-using Rekindle.UserGroups.Api.Extensions;
 using Rekindle.UserGroups.Api.Routes.Authentication;
 using Rekindle.UserGroups.Api.Routes.Groups;
 using Rekindle.UserGroups.Api.Routes.Users;
@@ -9,6 +7,7 @@ using Rekindle.UserGroups.DataAccess;
 using Rekindle.UserGroups.Infrastructure;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Rekindle.Authentication.OpenApi;
 using Rekindle.UserGroups.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);

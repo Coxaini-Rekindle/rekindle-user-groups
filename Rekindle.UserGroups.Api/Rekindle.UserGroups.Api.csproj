@@ -10,11 +10,12 @@
 
     <ItemGroup>
         <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="rekindle.authentication" Version="1.0.2"/>
         <PackageReference Include="rekindle.exceptions.api" Version="1.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1"/>
     </ItemGroup>

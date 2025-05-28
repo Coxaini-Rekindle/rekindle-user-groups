@@ -49,9 +49,6 @@ builder.Services
 
 var app = builder.Build();
 
-// Start the Rebus message bus
-app.Services.StartRebus();
-
 app.UseSwaggerUI(c =>
 {
     app.MapOpenApi();

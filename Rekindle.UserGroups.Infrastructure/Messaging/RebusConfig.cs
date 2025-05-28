@@ -24,7 +24,7 @@ public static class RebusConfig
         var rabbitMqConnectionString = configuration.GetConnectionString("RabbitMQ")
                                        ?? "amqp://guest:guest@localhost:5672";
 
-        var serviceName = configuration["ServiceName"] ?? "Rekindle.UserGroups";
+        var serviceName = configuration["ServiceName"];
 
         services.AddRebus(configure => configure
             .Transport(t => t.UseRabbitMq(rabbitMqConnectionString, serviceName))
@@ -33,23 +33,12 @@ public static class RebusConfig
                 r.TypeBased()
                     .MapAssemblyOf<IEvent>(serviceName);
             })
-            .Serialization(s => s.UseNewtonsoftJson())
             .Logging(l => l.ColoredConsole())
         );
 
         services.AddTransient<IEventPublisher, RebusEventPublisher>();
 
         return services;
-    }
-
-    /// <summary>
-    /// Starts the Rebus message bus
-    /// </summary>
-    /// <param name="serviceProvider">The service provider</param>
-    public static void StartRebus(this IServiceProvider serviceProvider)
-    {
-        // Start the bus
-        serviceProvider.GetRequiredService<Rebus.Bus.IBus>();
     }
 }
 

@@ -16,12 +16,14 @@ public class Group : Entity
 
     public static Group Create(string name, string description, DateTime createdAt, User creator)
     {
+        var id = Guid.NewGuid();
         var group = new Group
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             Name = name,
             Description = description,
-            CreatedAt = createdAt
+            CreatedAt = createdAt,
+            Members = [GroupUser.Create(creator.Id, id, GroupUserRole.Owner)]
         };
 
         group.AddDomainEvent(new GroupCreatedDomainEvent(
@@ -36,8 +38,6 @@ public class Group : Entity
             ),
             group.CreatedAt
         ));
-
-        group.AddMember(creator, GroupUserRole.Owner);
 
         return group;
     }
